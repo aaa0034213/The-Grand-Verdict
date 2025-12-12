@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>진실의 법정: The Grand Verdict</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gowun+Batang:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-wood: #1a0f0c;
+            /* darker rich wood */
+            --wood-texture: repeating-linear-gradient(45deg, #221411 0, #221411 2px, #361e16 2px, #361e16 6px);
+
+            --gold: #c5a059;
+            --gold-bright: #ffd700;
+            --paper: #fcfbf9;
+            --paper-line: #e6e6db;
+
+            --ink: #2b2b2b;
+            --red-seal: #8a0c0c;
+
+            --shadow: 0 15px 35px rgba(0, 0, 0, 0.65);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-wood);
+            background-image: var(--wood-texture);
+            color: var(--ink);
+            font-family: 'Nanum Myeongjo', serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* FRAME */
+        .app-frame {
+            width: 96%;
+            height: 96%;
+            max-width: 1600px;
+            background: #140a08;
+            border: 12px solid #361e16;
+            border-image: linear-gradient(to bottom, #4e2a1e, #22100c) 1;
+            box-shadow: 0 0 80px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* HEADER */
+        header {
+            height: 70px;
+            background: linear-gradient(to right, #221411, #361e16, #221411);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            border-bottom: 2px solid #5d4037;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .brand {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to bottom, #fff8dc, #deb887);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .status-bar {
+            color: #d7ccc8;
+            font-size: 1rem;
+            display: flex;
+            gap: 20px;
+        }
+
+        .hint-badge {
+            background: #3e2723;
+            padding: 2px 10px;
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hint-badge:hover {
+            background: #5d4037;
+        }
+
+        /* MAIN */
+        main {
+            flex: 1;
+            display: flex;
+            padding: 25px;
+            gap: 25px;
+            background: radial-gradient(circle at center, #261a17, #110907);
+        }
+
+        /* WITNESS */
+        .panel-left {
+            flex: 0 0 400px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: #1e1310;
+            border: 1px solid #3e2723;
+            box-shadow: var(--shadow);
+            border-radius: 4px;
+        }
+
+        .witness-stage {
+            background: #2e2e2e;
+            /* Mugshot height lines */
+            background-image: repeating-linear-gradient(0deg,
+                    transparent 0,
+                    transparent 19px,
+                    #555 20px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid #3e2723;
+        }
+
+        /* Vignette overlay */
+        .witness-stage::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.8) 100%);
+            pointer-events: none;
+        }
+
+        .avatar {
+            /* Photo Card Style */
+            width: 220px;
+            height: 280px;
+            background: #f0f0f0;
+            border: 10px solid #fff;
+            border-bottom: 40px solid #fff;
+            /* Polaroid bottom */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 8rem;
+            transform: rotate(-2deg);
+            position: relative;
+            z-index: 5;
+            transition: transform 0.3s;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05) rotate(0deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+        }
+
+        /* Paper Clip */
+        .avatar::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 35px;
+            border: 4px solid #aaa;
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            background: transparent;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .avatar::after {
+            /* Photo texture/gloss */
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%);
+            pointer-events: none;
+        }
+
+
+
+        .name-tag {
+            background: linear-gradient(to right, rgba(0, 0, 0, 0), #000, rgba(0, 0, 0, 0));
+            color: #fce4b3;
+            text-align: center;
+            padding: 10px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-top: 1px solid #5d4037;
+        }
+
+        .statement-area {
+            height: 200px;
+            background: #fffdf9;
+            padding: 20px;
+            border-top: 5px solid #3e2723;
+            position: relative;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #2b2b2b;
+            overflow-y: auto;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .statement-area::before {
+            content: "진술 기록 (TESTIMONY)";
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #8aa;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+        }
+
+        /* EVIDENCE */
+        .panel-right {
+            flex: 1;
+            background: var(--paper);
+            display: flex;
+            flex-direction: column;
+            border-radius: 2px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .panel-right::before {
+            /* Notebook spiral or binding visual */
+            content: '';
+            position: absolute;
+            top: 10px;
+            bottom: 10px;
+            left: 15px;
+            width: 2px;
+            border-left: 2px dashed #ccc;
+        }
+
+        .ev-header {
+            background: #dccdb3;
+            padding: 12px 30px 12px 40px;
+            border-bottom: 2px solid #bba;
+            color: #4e3e3e;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .ev-list {
+            flex: 1;
+            padding: 10px 10px 10px 35px;
+            overflow-y: auto;
+            /* Lined paper */
+            background-image: repeating-linear-gradient(var(--paper) 0, var(--paper) 39px, var(--paper-line) 40px);
+            background-attachment: local;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px;
+            color: #888;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #888;
+        }
+
+        td {
+            padding: 8px 10px;
+            height: 40px;
+            vertical-align: bottom;
+            font-weight: 600;
+            color: #444;
+        }
+
+        tr:hover td {
+            background: rgba(0, 0, 0, 0.03);
+            color: #000;
+            cursor: pointer;
+        }
+
+        tr.selected td {
+            color: #b71c1c;
+            position: relative;
+        }
+
+        tr.selected {
+            background: rgba(255, 215, 0, 0.15);
+        }
+
+        tr.selected td:nth-child(2)::before {
+            content: '✔';
+            position: absolute;
+            left: -15px;
+            color: red;
+            font-weight: 800;
+        }
+
+        .empty-msg {
+            text-align: center;
+            margin-top: 80px;
+            color: #ccc;
+        }
+
+        /* FOOTER */
+        footer {
+            height: 90px;
+            background: #1a0f0c;
+            border-top: 1px solid #3e2723;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            gap: 20px;
+        }
+
+        .search-wrap {
+            flex: 1;
+            position: relative;
+            background: #f5f5f5;
+            padding: 8px;
+            border-radius: 4px;
+            border: 2px inset #555;
+        }
+
+        input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .btn-obj {
+            background: #8a0c0c;
+            color: #ffd700;
+            border: 4px solid #4a0404;
+            padding: 0 40px;
+            height: 65px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            font-family: 'Gowun Batang';
+            cursor: pointer;
+            box-shadow: 0 5px 0 #2a0000;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.1s;
+        }
+
+        .btn-obj:active {
+            transform: translateY(5px);
+            box-shadow: none;
+        }
+
+        /* TITLE SCREEN */
+        #title-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #2b1b17, #000);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        .main-logo {
+            font-size: 4rem;
+            font-family: 'Gowun Batang';
+            color: transparent;
+            background: linear-gradient(to bottom, #ffd700, #b8860b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            text-shadow: 0 0 50px rgba(255, 215, 0, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .start-btn {
+            background: transparent;
+            color: #d7ccc8;
+            border: 2px solid #d7ccc8;
+            padding: 15px 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+            margin-top: 50px;
+        }
+
+        .start-btn:hover {
+            background: #d7ccc8;
+            color: #000;
+            box-shadow: 0 0 20px #d7ccc8;
+        }
+
+        /* MODALS */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-paper {
+            background: #fff;
+            width: 600px;
+            padding: 50px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 100px #000;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Top seal */
+        .modal-paper::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 20px;
+            background: rgba(200, 0, 0, 0.1);
+        }
+
+        .highlight {
+            color: #8a0c0c;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ANIMATIONS */
+        @keyframes stamp {
+            0% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(-10deg);
+                opacity: 1;
+            }
+        }
+
+        .stamp-fx {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-10deg);
+            border: 10px solid #aa0000;
+            color: #aa0000;
+            font-size: 5rem;
+            font-weight: 900;
+            padding: 20px 50px;
+            z-index: 4000;
+            background: rgba(255, 255, 255, 0.7);
+            animation: stamp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            pointer-events: none;
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-8px);
+            }
+
+            40% {
+                transform: translateX(8px);
+            }
+
+            60% {
+                transform: translateX(-4px);
+            }
+
+            80% {
+                transform: translateX(4px);
+            }
+        }
+
+        /* Typewriter Cursor */
+        .cursor::after {
+            content: '▋';
+            color: #333;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* TTS Button */
+        .tts-btn {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #555;
+            color: #aaa;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 8px;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .tts-btn:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        /* Confetti & Victory Overlay overrides */
+        #victory-screen {
+            background: rgba(10, 10, 10, 0.95);
+            z-index: 3000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(720deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TITLE SCREEN -->
+    <div id="title-screen">
+        <div class="main-logo">진실의 법정</div>
+        <div style="color:#888; font-size:1.2rem; letter-spacing:3px;">THE GRAND VERDICT</div>
+        <button class="start-btn" onclick="startGame()">재판 시작 (ENTER)</button>
+        <div style="margin-top:20px; color:#555; font-size:0.9rem;">(추천: 전체 화면 F11)</div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div class="app-frame" id="app">
+        <header>
+            <div class="brand">⚖️ TRUTH'S COURT</div>
+            <div class="status-bar">
+                <button class="mute-btn" id="btn-mute" onclick="toggleMute()">🔊</button>
+                <div class="hint-badge" onclick="useHint()">💡 힌트 (<span id="hint-cnt">5</span>)</div>
+                <span>#<span id="case-id">00</span></span>
+                <span id="health-disp" style="color:red; letter-spacing:2px;">❤️❤️❤️❤️❤️</span>
+            </div>
+        </header>
+
+        <main>
+            <!-- WITNESS -->
+            <div class="panel-left">
+                <div class="witness-stage">
+                    <div class="avatar" id="w-avatar">?</div>
+                    <div class="name-tag" id="w-name">Unknown</div>
+                    <button class="tts-btn" onclick="speakWitness()">🔊 증언 듣기</button>
+                </div>
+                <div class="statement-area">
+                    <span id="w-text"></span><span class="cursor"></span>
+                </div>
+            </div>
+
+            <!-- EVIDENCE -->
+            <div class="panel-right">
+                <div class="ev-header">
+                    <span>증거물 목록 (EVIDENCE)</span>
+                    <span id="ev-count" style="font-size:0.9rem; color:#666;">0건</span>
+                </div>
+                <div class="ev-list">
+                    <table id="ev-table">
+                        <thead>
+                            <tr>
+                                <th width="15%">#ID</th>
+                                <th width="35%">항목</th>
+                                <th>내용</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ev-body"></tbody>
+                    </table>
+                    <div id="ev-empty" class="empty-msg">
+                        <p style="font-size:2rem; margin-bottom:10px;">�</p>
+                        검색어를 입력하여 기록을 열람하십시오.
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="search-wrap">
+                <input type="text" id="inp-search" placeholder="조회할 키워드를 입력하십시오. (예: CCTV, 날씨, 지문)..."
+                    autocomplete="off">
+            </div>
+            <button class="btn-obj" id="btn-obj">
+                <span>🔨</span> 이의 제기!
+            </button>
+        </footer>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-paper">
+            <h2 id="m-title" style="font-size:2rem; border-bottom:2px solid #333; margin-bottom:20px;">TITLE</h2>
+            <div id="m-text" style="font-size:1.2rem; line-height:1.6; margin-bottom:30px;">Text</div>
+            <button class="modal-btn" id="m-btn">확인</button>
+        </div>
+    </div>
+
+    <!-- VICTORY SCREEN -->
+    <div id="victory-screen" class="hidden">
+        <div class="cert-frame">
+            <h1 style="font-size:3rem; color:var(--gold); margin-bottom:10px;">명탐정 인증서</h1>
+            <p style="color:#d7ccc8; font-size:1.2rem;">THE CERTIFICATE OF TRUTH</p>
+            <div style="font-size:5rem; margin:30px 0;">🏆</div>
+            <p style="color:#fff; font-size:1.3rem; line-height:1.8;">
+                귀하는 뛰어난 통찰력으로<br>
+                모든 사건의 진실을 밝혀냈습니다.
+            </p>
+            <button class="start-btn" onclick="location.reload()" style="margin-top:40px;">처음으로 돌아가기</button>
+        </div>
+    </div>
+
+    <!-- STAMP FX LAYER -->
+    <div id="stamp-layer"></div>
+
+    <script>
+        /* --- GAME DATA --- */
+        const CASES = [
+            {
+                id: 1,
+                title: "배달되지 않은 진실",
+                intro: "피고인 김철수는 사건 시각(23:00)에 집에서 배달 음식을 먹고 있었다고 주장합니다.",
+                witness: { name: "김철수 (34)", avatar: "🧔", text: "\"사건 시각이요? 전 집에서 '불꽃치킨'을 배달시켜 먹고 있었습니다. 11시에 정확히 도착해서 현관에서 받았구요. 영수증은 버려서 없지만 진짜입니다!\"" },
+                keywords: ["치킨", "배달", "음식", "시간", "집"],
+                correct_id: 103,
+                hint: "그 날, 그 시간에 '배달'이 정말 가능했을까요? 가게의 공지를 확인하세요.",
+                db: [
+                    { id: 101, title: "치킨집 메뉴판", content: "불꽃치킨: 18,000원 (배달비 별도).", keywords: ["메뉴", "치킨"] },
+                    { id: 102, title: "통화 기록", content: "22:15 - 치킨집에 전화를 건 기록 있음 (통화 시간 3초).", keywords: ["통화", "전화"] },
+                    { id: 103, title: "가게 휴무 공지", content: "당일(사건일) '내부 수리'로 인해 22:00시에 조기 마감함.", keywords: ["공지", "시간", "마감"] },
+                    { id: 104, title: "카드 결제 내역", content: "해당 시간에 결제된 내역 없음.", keywords: ["결제", "카드"] },
+                    { id: 105, title: "엘리베이터 CCTV", content: "23:10 - 배달원으로 보이는 오토바이 헬멧 착용자가 탑승.", keywords: ["cctv", "영상"] }
+                ]
+            },
+            {
+                id: 2,
+                title: "분실된 ID카드",
+                intro: "경비원은 ID카드를 잃어버려 동쪽 전시관 문을 열 수 없었다고 주장합니다.",
+                witness: { name: "박경비 (55)", avatar: "👮", text: "\"어제 아침 출근길에 ID카드를 잃어버렸습니다. 그래서 하루 종일 마스터키를 못 썼는데, 제가 어떻게 닫힌 문을 엽니까? 억울합니다.\"" },
+                keywords: ["카드", "분실", "키", "문", "출근"],
+                correct_id: 204,
+                hint: "ID카드를 잃어버렸다면 '사용'할 수 없어야 합니다. 그런데 사용한 기록이 또 있군요.",
+                db: [
+                    { id: 201, title: "분실물 센터", content: "접수된 ID카드 없음.", keywords: ["분실"] },
+                    { id: 202, title: "출입문 로그", content: "20:45 - 동쪽 전시관 개방됨 (인증 수단 불명).", keywords: ["로그", "문"] },
+                    { id: 203, title: "동료 진술", content: "박경비가 아침부터 카드를 찾는 걸 봤다.", keywords: ["동료"] },
+                    { id: 204, title: "구내식당 결제 내역", content: "사건 당일 12:30 (점심) - '박경비 ID카드'로 식권 결제됨.", keywords: ["식당", "결제", "카드", "점심"] }
+                ]
+            },
+            {
+                id: 3,
+                title: "알레르기 트릭",
+                intro: "집사는 땅콩 알레르기 때문에 피해자의 땅콩 음료를 만들 수 없었다고 주장합니다.",
+                witness: { name: "최집사 (42)", avatar: "🤵", text: "\"주인님 드실 '땅콩 라떼'요? 전 심한 땅콩 알레르기가 있어서 냄새만 맡아도 쓰러집니다. 제가 그걸 어떻게 만듭니까?\"" },
+                keywords: ["땅콩", "알레르기", "음료", "라떼", "병"],
+                correct_id: 304,
+                hint: "알레르기가 거짓말이라는 증거를 찾아보세요. 그가 최근에 먹은 것을 확인해보세요.",
+                db: [
+                    { id: 301, title: "주방 CCTV", content: "집사가 마스크와 장갑을 끼고 요리하는 모습.", keywords: ["cctv", "장갑"] },
+                    { id: 302, title: "피해자 부검", content: "사인: 땅콩 쇼크사.", keywords: ["부검"] },
+                    { id: 303, title: "병원 진료 기록", content: "최근 3년간 알레르기 반응으로 내원한 기록 없음.", keywords: ["병원", "기록"] },
+                    { id: 304, title: "편의점 영수증", content: "사건 당일 아침 - '꿀땅콩 스낵' 구매 및 섭취 목격됨.", keywords: ["영수증", "땅콩", "과자"] },
+                    { id: 305, title: "와인병", content: "지문 없음.", keywords: ["와인"] }
+                ]
+            },
+            {
+                id: 4,
+                title: "고장난 PC",
+                intro: "김대리는 사건 발생 시각에 사무실 PC로 보고서를 작성 중이었다고 합니다.",
+                witness: { name: "김대리 (29)", avatar: "🧑‍💼", text: "\"밤 10시요? 사무실 제 자리에서 '재무 보고서' 엑셀 작업 중이었습니다. 저장 기록 보시면 알 거 아닙니까.\"" },
+                keywords: ["pc", "약속", "보고서", "작업", "파일"],
+                correct_id: 403,
+                hint: "그 시각, 그 PC는 '작업'이 불가능한 상태였습니다.",
+                db: [
+                    { id: 401, title: "파일 저장 기록", content: "마지막 저장: 3일 전.", keywords: ["파일", "저장"] },
+                    { id: 402, title: "사무실 CCTV", content: "김대리의 자리 쪽은 사각지대라 안 보임.", keywords: ["cctv"] },
+                    { id: 403, title: "전산팀 유지보수 일지", content: "사건 당일 18:00 - 김대리 좌석 PC '하드디스크 고장'으로 수거함 (사용 불가).", keywords: ["수리", "고장", "pc", "하드"] },
+                    { id: 404, title: "메신저 기록", content: "친구에게 '야근 중'이라고 보냄.", keywords: ["메신저"] },
+                    { id: 405, title: "책상 위 메모", content: "\"보고서 마감 내일까지!\"", keywords: ["메모"] }
+                ]
+            },
+            {
+                id: 5,
+                title: "왼손잡이의 흔적",
+                intro: "피해자는 왼쪽에서 공격당했습니다. 용의자는 자신이 오른손잡이라 불가능하다고 주장합니다.",
+                witness: { name: "한타자 (31)", avatar: "⚾", text: "\"부검 감정서를 보세요! 범인은 왼손잡이라면서요? 전 태어날 때부터 오른손잡이였습니다. 젓가락질도 오른손으로 한다구요!\"" },
+                keywords: ["손", "왼손", "오른손", "방향", "야구"],
+                correct_id: 504,
+                hint: "평소에는 오른손을 쓰더라도, 특정 상황에서 왼손을 쓴다는 기록을 찾으세요.",
+                db: [
+                    { id: 501, title: "부검 감정서", content: "자창의 각도를 볼 때 범인은 '왼손'을 주로 사용했을 가능성이 높음.", keywords: ["부검", "왼손"] },
+                    { id: 502, title: "직장 동료 증언", content: "그 친구 글씨 쓰는 거 보면 영락없는 오른손잡이 맞아요.", keywords: ["동료", "오른손"] },
+                    { id: 503, title: "진료 기록", content: "오른쪽 어깨 회전근개 파열로 치료 중.", keywords: ["병원", "어깨"] },
+                    { id: 504, title: "야구 동호회 사진", content: "용의자가 '좌타자(왼손 타자)' 포지션에서 홈런을 치고 있는 사진.", keywords: ["야구", "사진", "왼손", "스포츠"] },
+                    { id: 505, title: "흉기", content: "현장에서 발견된 식칼. 지문 없음.", keywords: ["흉기"] }
+                ]
+            },
+            {
+                id: 6,
+                title: "침묵의 감시자",
+                intro: "경비견이 짖지 않았습니다. 용의자는 '초음파 호루라기'를 썼다고 자백(?)하며 형량을 낮추려 합니다.",
+                witness: { name: "도둑놈 (40)", avatar: "🕶️", text: "\"그래요, 제가 들어갔습니다. 하지만 개를 해치진 않았어요! 개가 짖으려길래 '초음파 호루라기'를 불어서 조용히 시킨 것뿐입니다. 개한테만 들리는 그거요!\"" },
+                keywords: ["개", "소리", "호루라기", "초음파", "짖다"],
+                correct_id: 603,
+                hint: "그 개가 과연 호루라기 소리를 들을 수 있었을까요? 개의 건강 상태를 확인하세요.",
+                db: [
+                    { id: 601, title: "압수물 목록", content: "전문가용 초음파 호루라기 (작동 확인됨).", keywords: ["호루라기"] },
+                    { id: 602, title: "현장 사진", content: "마당에 개집이 있고, 셰퍼드 한 마리가 자고 있음.", keywords: ["개", "사진"] },
+                    { id: 603, title: "동물병원 소견서", content: "해당 경비견은 노환으로 양쪽 귀가 완전히 멀어(청력 상실) 소리를 전혀 듣지 못함.", keywords: ["병원", "개", "귀", "청력"] },
+                    { id: 604, title: "이웃 증언", content: "그 집 개는 평소에 앙칼지게 잘 짖는다.", keywords: ["이웃", "소리"] },
+                    { id: 605, title: "CCTV", content: "범인이 담을 넘는 모습. 소리는 녹음되지 않음.", keywords: ["cctv"] }
+                ]
+            },
+            {
+                id: 7,
+                title: "어둠 속의 독서",
+                intro: "정전이 발생한 시각, 용의자는 도서관에서 책을 읽고 있었다고 주장합니다.",
+                witness: { name: "강독서 (25)", avatar: "📖", text: "\"사건이 일어난 9시요? 전 시립도서관 열람실에 있었습니다. 형광등이 아주 밝아서 책 읽기에 딱 좋았거든요. CCTV 확인해 보세요!\"" },
+                keywords: ["책", "도서관", "빛", "불", "시간", "정전"],
+                correct_id: 702,
+                hint: "그 시간에 과연 도서관의 '형광등'이 켜져 있었을까요?",
+                db: [
+                    { id: 701, title: "도서관 출입기록", content: "입실: 18:00, 퇴실: 22:00. (알리바이 성립?)", keywords: ["도서관", "기록"] },
+                    { id: 702, title: "한전 공지사항", content: "긴급 정전 안내: 20:00 ~ 21:30 해당 지역 전체 '완전 정전' (비상전력 제외).", keywords: ["정전", "전기", "불"] },
+                    { id: 703, title: "도서관 시설 안내", content: "비상등은 복도와 계단에만 설치되어 있음. (열람실은 소등됨)", keywords: ["시설", "비상등"] },
+                    { id: 704, title: "읽던 책", content: "미적분학 개론 (매우 작은 글씨).", keywords: ["책"] },
+                    { id: 705, title: "휴대폰 배터리", content: "방전 상태로 발견됨. (플래시 사용 불가)", keywords: ["폰", "배터리"] }
+                ]
+            }
+        ];
+
+        /* --- STATE --- */
+        let state = { idx: 0, health: 5, sel: null, hints: 5, muted: false };
+        let audio = null;
+        let typeTimer = null;
+
+        const $ = id => document.getElementById(id);
+
+        /* --- LOGIC --- */
+        function startGame() {
+            $('title-screen').classList.add('hidden');
+            loadCase(0);
+
+            // Events
+            $('inp-search').addEventListener('keypress', e => e.key === 'Enter' && doSearch());
+            $('btn-obj').addEventListener('click', objection);
+        }
+
+        function loadCase(i) {
+            if (i >= CASES.length) {
+                showVictory();
+                return;
+            }
+            state.idx = i;
+            const d = CASES[i];
+
+            $('case-id').innerText = `0${i + 1}`;
+            $('w-avatar').innerText = d.witness.avatar;
+            $('w-name').innerText = d.witness.name;
+
+            // Typewriter effect
+            $('w-text').innerText = "";
+            let txt = d.witness.text;
+            let ci = 0;
+            if (typeTimer) clearInterval(typeTimer);
+
+            typeTimer = setInterval(() => {
+                $('w-text').innerText += txt.charAt(ci);
+                play('type');
+                ci++;
+                if (ci >= txt.length) clearInterval(typeTimer);
+            }, 50);
+
+            // Reset UI
+            $('ev-body').innerHTML = '';
+            $('ev-empty').classList.remove('hidden');
+            $('ev-count').innerText = "0건";
+            state.sel = null;
+            $('inp-search').value = '';
+
+            showModal(`사건 #0${i + 1}`, d.intro);
+        }
+
+        function doSearch() {
+            const q = $('inp-search').value.trim();
+            if (!q) return;
+            play('paper');
+
+            const db = CASES[state.idx].db;
+            const res = db.filter(item =>
+                item.title.includes(q) ||
+                item.content.includes(q) ||
+                item.keywords.some(k => k.includes(q))
+            );
+
+            render(res);
+        }
+
+        function render(list) {
+            const tb = $('ev-body');
+            tb.innerHTML = '';
+            $('ev-count').innerText = `${list.length}건`;
+
+            if (list.length > 0) {
+                $('ev-empty').classList.add('hidden');
+                list.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.onclick = () => select(item.id, tr);
+                    tr.innerHTML = `
+                        <td style="color:#800000; font-family:sans-serif;">#${item.id}</td>
+                        <td>${item.title}</td>
+                        <td>${item.content}</td>
+                    `;
+                    tb.appendChild(tr);
+                });
+            } else {
+                $('ev-empty').classList.remove('hidden');
+            }
+        }
+
+        function select(id, row) {
+            play('click');
+            state.sel = id;
+            Array.from($('ev-body').children).forEach(r => r.classList.remove('selected'));
+            row.classList.add('selected');
+        }
+
+        function objection() {
+            if (!state.sel) {
+                alert("증거를 먼저 선택하십시오.");
+                return;
+            }
+            play('slam');
+
+            // Button Anim
+            const btn = $('btn-obj');
+            btn.style.transform = "scale(0.95)";
+            setTimeout(() => btn.style.transform = "scale(1)", 150);
+
+            const correct = (state.sel === CASES[state.idx].correct_id);
+            setTimeout(() => {
+                if (correct) {
+                    play('win');
+                    showStamp("SUSTAINED");
+                    setTimeout(() => {
+                        showModal("이의 제기 성공!", "모순을 완벽하게 지적했습니다.\n다음 사건으로 넘어갑니다.", false, () => loadCase(state.idx + 1));
+                    }, 1500);
+                } else {
+                    play('error');
+                    document.body.classList.add('shake');
+                    state.health--;
+                    updateHealth();
+                    setTimeout(() => document.body.classList.remove('shake'), 500);
+
+                    if (state.health <= 0) {
+                        showModal("패소 (GAME OVER)", "신뢰도를 모두 잃었습니다.", true);
+                    }
+                }
+            }, 600);
+        }
+
+        function useHint() {
+            if (state.hints <= 0) {
+                alert("힌트를 모두 소진했습니다.");
+                return;
+            }
+            if (confirm(`힌트를 보시겠습니까? (남은 횟수: ${state.hints})`)) {
+                state.hints--;
+                $('hint-cnt').innerText = state.hints;
+                alert(`HINT: ${CASES[state.idx].hint}`);
+            }
+        }
+
+        function showStamp(txt) {
+            const di = document.createElement('div');
+            di.className = 'stamp-fx';
+            di.innerText = txt;
+            $('stamp-layer').appendChild(di);
+            setTimeout(() => di.remove(), 2000);
+        }
+
+        function updateHealth() {
+            $('health-disp').innerText = "❤️".repeat(state.health);
+        }
+
+        function toggleMute() {
+            state.muted = !state.muted;
+            $('btn-mute').innerText = state.muted ? "🔇" : "🔊";
+            if (state.muted && audio) audio.close().then(() => audio = null);
+        }
+
+        // Initialize voices
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        }
+
+        function speakWitness() {
+            if (!('speechSynthesis' in window)) {
+                alert("음성 합성을 지원하지 않는 브라우저입니다.");
+                return;
+            }
+            window.speechSynthesis.cancel();
+
+            const text = CASES[state.idx].witness.text.replace(/"/g, '');
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'ko-KR';
+            u.rate = 1.0;
+
+            let voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) {
+                // Force retry
+                window.speechSynthesis.getVoices();
+                voices = window.speechSynthesis.getVoices();
+            }
+
+            // Enhanced selection: Google Korean -> ko-KR -> any 'ko'
+            const korVoice = voices.find(v => v.name.includes('Google 한국어')) ||
+                voices.find(v => v.lang === 'ko-KR') ||
+                voices.find(v => v.lang.includes('ko'));
+
+            if (korVoice) {
+                u.voice = korVoice;
+            } else {
+                console.warn("Korean voice not found. Using default.");
+            }
+
+            window.speechSynthesis.speak(u);
+        }
+
+        function showVictory() {
+            $('victory-screen').classList.remove('hidden');
+            play('win');
+
+            // Confetti
+            for (let i = 0; i < 60; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.backgroundColor = ['#ffd700', '#fff', '#e91e63', '#00e676'][Math.floor(Math.random() * 4)];
+                c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                c.style.top = -20 + 'px';
+                $('victory-screen').appendChild(c);
+            }
+        }
+
+        function showModal(t, txt, isReload = false, cb = null) {
+            $('m-title').innerText = t;
+            $('m-text').innerText = txt;
+            $('m-btn').innerText = isReload ? "처음으로" : "확인";
+            $('modal').classList.remove('hidden');
+
+            $('m-btn').onclick = () => {
+                if (isReload) location.reload();
+                else {
+                    $('modal').classList.add('hidden');
+                    initAudio();
+                    if (cb) cb();
+                }
+            }
+        }
+
+        /* --- AUDIO --- */
+        function initAudio() { if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)(); }
+        function play(t) {
+            if (state.muted) return;
+            if (!audio) return;
+            const o = audio.createOscillator();
+            const g = audio.createGain();
+            o.connect(g); g.connect(audio.destination);
+            const now = audio.currentTime;
+
+            if (t === 'type') {
+                o.type = 'square'; o.frequency.value = 600;
+                g.gain.value = 0.02; o.start(now); o.stop(now + 0.03);
+            }
+            if (t === 'paper') {
+                o.type = 'sawtooth'; o.frequency.value = 150;
+                g.gain.value = 0.05; g.gain.linearRampToValueAtTime(0, now + 0.1);
+                o.start(now); o.stop(now + 0.1);
+            }
+            if (t === 'click') {
+                o.type = 'sine'; o.frequency.value = 800; g.gain.value = 0.05;
+                o.start(now); o.stop(now + 0.05);
+            }
+            if (t === 'slam') {
+                o.type = 'square'; o.frequency.exponentialRampToValueAtTime(50, now + 0.2);
+                g.gain.setValueAtTime(0.5, now); g.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                o.start(now); o.stop(now + 0.3);
+            }
+            if (t === 'win') {
+                o.type = 'triangle';
+                o.frequency.setValueAtTime(523, now);
+                o.frequency.setValueAtTime(659, now + 0.15);
+                o.frequency.setValueAtTime(784, now + 0.3);
+                g.gain.value = 0.2; g.gain.linearRampToValueAtTime(0, now + 1);
+                o.start(now); o.stop(now + 1);
+            }
+            if (t === 'error') {
+                o.type = 'sawtooth'; o.frequency.value = 100;
+                g.gain.value = 0.2; o.start(now); o.stop(now + 0.3);
+            }
+        }
+    </script>
+</body>
+
+</html>
